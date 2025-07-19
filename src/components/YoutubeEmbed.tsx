@@ -16,7 +16,7 @@ export default function YouTubeEmbed() {
   // const [cuts, setCuts] = useState<Cut[]>([]);
   const [newStart, setNewStart] = useState('');
   const [newEnd, setNewEnd] = useState('');
-  const [autoplay, setAutoplay] = useState(false);
+  // const [autoplay, setAutoplay] = useState(false);
   // const [shareUrl, setShareUrl] = useState('');
   const playerRef = useRef<any>(null);
   const currentCut = useRef(0);
@@ -54,35 +54,81 @@ export default function YouTubeEmbed() {
         if (parsed.length) {
           setVideoId(v);
           setCuts(parsed);
-          setAutoplay(true);
+          // setAutoplay(true);
         }
       } catch {
         console.error('Invalid cuts param');
       }
     }
   }, []);
+
+  useEffect(() => {
+    // Load iframe API script once
+    if (!window['YT']) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(tag);
+    }
+  }, []);
   
   useEffect(() => {
     if (!videoId) return;
-
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.body.appendChild(tag);
-
-    (window as any).onYouTubeIframeAPIReady = () => {
+  
+    // If player already exists, destroy it before creating new one
+    if (playerRef.current && playerRef.current.destroy) {
+      playerRef.current.destroy();
+      playerRef.current = null;
+    }
+  
+    const createPlayer = () => {
       playerRef.current = new (window as any).YT.Player('ytplayer', {
         videoId,
         events: {
-          onReady: autoplay ? () => startCutLoop() : undefined,
+          onReady: undefined, //autoplay ? () => startCutLoop() : undefined,
           onStateChange: onPlayerStateChange,
         },
       });
     };
-
+  
+    if ((window as any).YT && (window as any).YT.Player) {
+      createPlayer();
+    } else {
+      // API not ready yet, set global callback
+      (window as any).onYouTubeIframeAPIReady = () => {
+        createPlayer();
+      };
+    }
+  
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
     };
-  }, [videoId, cuts, autoplay]);
+  }, [videoId]);
+  
+  // useEffect(() => {
+  //   if (!videoId) return;
+
+  //   const tag = document.createElement('script');
+  //   tag.src = 'https://www.youtube.com/iframe_api';
+  //   document.body.appendChild(tag);
+
+  //   (window as any).onYouTubeIframeAPIReady = () => {
+  //     playerRef.current = new (window as any).YT.Player('ytplayer', {
+  //       videoId,
+  //       events: {
+  //         onReady: autoplay ? () => startCutLoop() : undefined,
+  //         onStateChange: onPlayerStateChange,
+  //       },
+  //     });
+  //   };
+
+  //   return () => {
+  //     if (intervalRef.current) clearInterval(intervalRef.current);
+  //   };
+  // }, [videoId]);
 
   const extractVideoId = (ytUrl: string): string | null => {
     const match = ytUrl.match(
@@ -93,12 +139,13 @@ export default function YouTubeEmbed() {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData('text');
+    console.log(text)
     const id = extractVideoId(text);
     if (id) {
       setUrl(text);
       setVideoId(id);
       setCuts([]);
-      setAutoplay(false);
+      // setAutoplay(false);
       setShareUrl('');
     }
   };
