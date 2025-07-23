@@ -130,26 +130,43 @@ export default function YouTubeEmbed() {
   //   };
   // }, [videoId]);
 
-  const extractVideoId = (ytUrl: string): string | null => {
-    const match = ytUrl.match(
-      /(?:youtube\.com\/(?:.*[?&]v=|embed\/)|youtu\.be\/)([^"&?/\s]{11})/
-    );
-    return match ? match[1] : null;
+  const extractVideoId = (input: string): string | null => {
+    const trimmed = input.trim();
+  
+    // If it's a raw video ID (11 characters, alphanumeric, common in YT)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      return trimmed;
+    }
+  
+    try {
+      const url = new URL(trimmed);
+      const hostname = url.hostname;
+      const searchParams = url.searchParams;
+  
+      if (hostname.includes('youtube.com')) {
+        return searchParams.get('v');
+      } else if (hostname === 'youtu.be') {
+        return url.pathname.slice(1);
+      }
+    } catch {
+      // Ignore invalid URL, fallback already handled
+    }
+  
+    return null;
   };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData('text');
-    console.log(text)
+  
+  
+  const handleUrlPasteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
     const id = extractVideoId(text);
     if (id) {
       setUrl(text);
       setVideoId(id);
       setCuts([]);
-      // setAutoplay(false);
       setShareUrl('');
     }
   };
-
+  
   const addCutFunc = () => {
     const s = timestampToSeconds(newStart);
     const e = timestampToSeconds(newEnd);
@@ -262,9 +279,9 @@ export default function YouTubeEmbed() {
   
       <input
         type="text"
-        onPaste={handlePaste}
+        onChange={handleUrlPasteChange}
         className="w-full p-2 border rounded mb-4"
-        placeholder="Paste YouTube URL here"
+        placeholder="Paste or type YouTube URL or Video ID here"
       />
   
       {videoId && (
