@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatTime } from '@/lib/utils';
 import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { Loop } from '@/lib/types';
 
 function SkeletonRow() {
@@ -151,14 +151,17 @@ export default function Saved() {
         <h1 className="text-xl font-semibold mb-4">Saved Loops</h1>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
             placeholder="Search by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="border px-3 py-2 rounded w-full sm:w-64"
+            className="pl-10 pr-3 py-2 border rounded w-full"
             aria-label="Search loops by name"
           />
+        </div>
 
           <Select
             value={sortOrder}

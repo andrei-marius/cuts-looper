@@ -32,13 +32,13 @@ import {
         </DropdownMenuTrigger>
   
         <DropdownMenuContent align="end" className="w-[200px]">
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="cursor-pointer">
             <Link className="w-full" href="/saved">
               Saved
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem asChild className="cursor-pointer">
             <LogoutLink
                 className="w-full"
                 postLogoutRedirectURL={`${window.location.origin}`}
