@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { timestampToSeconds, secondsToTimestamp, generateLink } from '@/lib/utils';
+import { timestampToSeconds, secondsToTimestamp } from '@/lib/utils';
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Cut } from '@/lib/types';
 import { useStore } from '@/lib/store';
 import { SaveLoopButton } from './SaveLoop';
 import { Button } from './ui/button';
+import { buildShareUrl } from '@/lib/utils';
 
 export default function YouTubeEmbed() {
   const [url, setUrl] = useState('');
@@ -31,7 +32,6 @@ export default function YouTubeEmbed() {
     _setLoop(val);
   };
 
-  // Use Zustand state instead:
   const {
     cuts,
     shareUrl,
@@ -63,7 +63,6 @@ export default function YouTubeEmbed() {
   }, []);
 
   useEffect(() => {
-    // Load iframe API script once
     if (!window['YT']) {
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
@@ -74,7 +73,6 @@ export default function YouTubeEmbed() {
   useEffect(() => {
     if (!videoId) return;
   
-    // If player already exists, destroy it before creating new one
     if (playerRef.current && playerRef.current.destroy) {
       playerRef.current.destroy();
       playerRef.current = null;
@@ -93,7 +91,6 @@ export default function YouTubeEmbed() {
     if ((window as any).YT && (window as any).YT.Player) {
       createPlayer();
     } else {
-      // API not ready yet, set global callback
       (window as any).onYouTubeIframeAPIReady = () => {
         createPlayer();
       };
@@ -194,7 +191,7 @@ export default function YouTubeEmbed() {
     if (!current) {
       if (loopRef.current) {
         currentCut.current = 0;
-        playCurrentCut(); // restart
+        playCurrentCut();
       } else {
         playerRef.current.pauseVideo();
         clearInterval(intervalRef.current!);
@@ -223,7 +220,7 @@ export default function YouTubeEmbed() {
 
       if (currentTime >= cut.end) {
         currentCut.current++;
-        playCurrentCut(); // Next cut
+        playCurrentCut();
       }
     }, 300); 
   };
@@ -234,7 +231,6 @@ export default function YouTubeEmbed() {
       const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
       const cut = cuts[currentCut.current];
     
-      // Only cancel if we’re mid-cut and not at the beginning of a seek
       if (
         isPlaying &&
         cut &&
@@ -250,11 +246,25 @@ export default function YouTubeEmbed() {
   const handleAutoLoop = (checked: boolean) => {
     setLoop(checked);
 
-    // If loop just got enabled and loop is finished, restart it
     if (checked && isFinished) {
       startCutLoop();
     }
   }
+
+  const handleGenerateShareLink = () => {
+    if (cuts.length === 0) {
+      toast.error('Add at least one Cut first');
+      setShareUrl('');
+      return;
+    }
+
+    const link = buildShareUrl(cuts, videoId);
+    
+    setShareUrl(link);
+    navigator.clipboard.writeText(link);
+    toast.success('Copied Share Link');
+    return link;
+  };
 
   return (
     <>
@@ -269,12 +279,10 @@ export default function YouTubeEmbed() {
   
       {videoId && (
         <div className="flex flex-col items-center gap-4">
-          {/* ✅ YouTube Player Container */}
           <div className="aspect-[16/9] w-full max-w-3xl">
             <div id="ytplayer" className="w-full h-full rounded-md" />
           </div>
 
-          {/* ✅ Controls */}
           <div className="flex items-center">
             <Button
               variant='outline'
@@ -297,7 +305,6 @@ export default function YouTubeEmbed() {
             </div>
           </div>
 
-          {/* ✅ Cut Management */}
           <div className="mb-4">
             <h2 className="font-semibold mb-2 mt-4">Add a Cut</h2>
             <div className="flex gap-2 items-center max-sm:flex-col">
@@ -344,10 +351,9 @@ export default function YouTubeEmbed() {
               </ul>
             )}
 
-            {/* ✅ Share/Save Buttons */}
             <div className="flex items-center justify-center mt-10 space-x-4">
               <Button
-                onClick={generateLink}
+                onClick={handleGenerateShareLink}
                 variant='outline'
                 className='cursor-pointer'
               >

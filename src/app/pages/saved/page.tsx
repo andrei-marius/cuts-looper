@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useDebounce } from '../hooks/useDebounce';
+import { useDebounce } from '../../hooks/useDebounce';
 import {
   Dialog,
   DialogTrigger,
@@ -109,19 +109,16 @@ export default function Saved() {
     return filtered;
   }, [loops, debouncedSearchTerm, sortOrder]);
 
-  // 1. Still checking auth
   if (isAuthLoading) {
     return (
         <Loader2 className="animate-spin h-10 w-10 mt-4 mx-auto" />
     );
   }
 
-  // 2. Not authenticated
   if (!isAuthenticated || !user) {
     return <p className="p-4 text-center">You need to be logged in to view saved loops.</p>;
   }
 
-  // 3. Authenticated but still loading data
   if (loading) {
     return (
       <div className="p-4">
@@ -144,7 +141,6 @@ export default function Saved() {
     );
   }
 
-  // 4. No loops found
   if (loops.length === 0) {
     return <p className="p-4 text-center">No saved loops.</p>;
   }

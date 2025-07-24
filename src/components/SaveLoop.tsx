@@ -9,7 +9,7 @@ import { useStore } from '@/lib/store';
 import { db } from '@/lib/db';
 import { Loader2 } from 'lucide-react';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { generateLink } from '@/lib/utils';
+import { buildShareUrl } from '@/lib/utils';
 
 export function SaveLoopButton() {
   const [open, setOpen] = useState(false);
@@ -29,14 +29,12 @@ export function SaveLoopButton() {
       return;
     }
     
-    setOpen(true); // Open dialog only if authenticated
+    setOpen(true);
   }
 
   const handleSave = async () => {
-    // const shareLink = generateLink();
+    const link = buildShareUrl(cuts, videoId);
 
-    const cutsParam = encodeURIComponent(JSON.stringify(cuts));
-    const link = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
     setShareUrl(link);
 
     if (!name) {
@@ -44,7 +42,7 @@ export function SaveLoopButton() {
       return;
     }
 
-    setLoading(true); // Start loader
+    setLoading(true);
 
     if (user) {
       try {
@@ -63,7 +61,7 @@ export function SaveLoopButton() {
       } catch (err: any) {
           toast.error(err.message || 'Failed to save');
       } finally {
-          setLoading(false); // Stop loader
+          setLoading(false);
           setOpen(false);
           clearCuts();
       }

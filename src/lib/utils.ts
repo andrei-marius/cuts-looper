@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { useStore } from "./store";
-import toast from 'react-hot-toast';
+import { Cut } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -20,23 +19,6 @@ export function secondsToTimestamp(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export const generateLink = () => {
-  const { cuts, videoId, setShareUrl } = useStore.getState();
-
-  if (cuts.length === 0) {
-    toast.error('Add at least one Cut first');
-    setShareUrl('');
-    return;
-  }
-
-  const cutsParam = encodeURIComponent(JSON.stringify(cuts));
-  const link = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
-  setShareUrl(link);
-  navigator.clipboard.writeText(link);
-  toast.success('Copied Share Link');
-  return link;
-};
-
 export function formatTime(seconds: number) {
   const mins = Math.floor(seconds / 60)
     .toString()
@@ -45,4 +27,11 @@ export function formatTime(seconds: number) {
     .toString()
     .padStart(2, '0');
   return `${mins}:${secs}`;
+}
+
+export const buildShareUrl = (cuts: Cut[], videoId: string | null) => {
+  const cutsParam = encodeURIComponent(JSON.stringify(cuts));
+  const link = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
+
+  return link
 }
