@@ -1,75 +1,48 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useActionState, startTransition } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import toast from 'react-hot-toast';
-import { useStore } from '@/lib/store';
-import { db } from '@/lib/db';
+import { useStore } from '@/app/lib/store';
 import { Loader2 } from 'lucide-react';
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { buildShareUrl } from '@/lib/utils';
+import { buildShareUrl } from '@/app/lib/utils';
+import { saveLoop } from '@/app/actions/saveLoop';
 
 export function SaveLoopButton() {
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [name, setName] = useState('');
   const { cuts, shareUrl, videoId, setShareUrl, clearCuts } = useStore();
-  const [loading, setLoading] = useState(false);
-  const { isAuthenticated, user } = useKindeBrowserClient();
+  const [state, actionSaveLoop, pending] = useActionState(saveLoop, { msg: '' })
 
   const handleSaveClick = () => {
-    if (!isAuthenticated) {
-      toast.error('You need to Log in first');
-      return;
-    }
-
     if (!cuts.length) {
       toast.error('Add at least one Cut first');
       return;
     }
     
-    setOpen(true);
+    setDialogOpen(true);
   }
 
   const handleSave = async () => {
-    const link = buildShareUrl(cuts, videoId);
-
-    setShareUrl(link);
-
     if (!name) {
       toast.error('Missing Name');
       return;
     }
 
-    setLoading(true);
+    const link = buildShareUrl(cuts, videoId);
+    setShareUrl(link);
 
-    if (user) {
-      try {
-          const { error } = await db.from('loop').insert([
-              {
-                user_id: user.id,
-                name,
-                cuts,
-                share_url: link
-              },
-          ]);
+    actionSaveLoop({ name, cuts, link })
   
-          if (error) throw error;
-  
-          toast.success('Loop saved');
-      } catch (err: any) {
-          toast.error(err.message || 'Failed to save');
-      } finally {
-          setLoading(false);
-          setOpen(false);
-          clearCuts();
-      }
-    }
-};
+    toast.success(state.msg);
+    setDialogOpen(false);
+    clearCuts();
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {/* <DialogTrigger asChild> */}
         <Button 
           onClick={handleSaveClick} 
@@ -90,14 +63,22 @@ export function SaveLoopButton() {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <DialogFooter>
+
+        <div className="flex justify-between">
+        <Button
+          variant="secondary"
+          onClick={() => setDialogOpen(false)}
+          className='cursor-pointer'
+        >
+          Cancel
+        </Button>
         <Button 
-          onClick={handleSave} 
-          disabled={loading}
+          onClick={() => startTransition(handleSave)} 
+          disabled={pending}
           className='cursor-pointer'
           variant='outline'
         >
-            {loading ? (
+            {pending ? (
                 <div className="flex items-center gap-2">
                     <Loader2 className="animate-spin h-4 w-4" />
                 Saving...
@@ -107,7 +88,7 @@ export function SaveLoopButton() {
             )}
         </Button>
 
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -2,14 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { timestampToSeconds, secondsToTimestamp } from '@/lib/utils';
+import { timestampToSeconds, secondsToTimestamp } from '@/app/lib/utils';
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Cut } from '@/lib/types';
-import { useStore } from '@/lib/store';
+import { Cut } from '@/app/lib/types';
+import { useStore } from '@/app/lib/store';
 import { SaveLoopButton } from './SaveLoop';
 import { Button } from './ui/button';
-import { buildShareUrl } from '@/lib/utils';
+import { buildShareUrl } from '@/app/lib/utils';
 
 export default function YouTubeEmbed() {
   const [url, setUrl] = useState('');
