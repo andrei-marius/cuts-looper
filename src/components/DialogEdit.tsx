@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, startTransition } from 'react'
+import { useActionState, startTransition, useEffect } from 'react'
 import {
   Dialog,
   DialogTrigger,
@@ -15,19 +15,38 @@ import { editLoop } from "@/app/actions/editLoop";
 import { Loop } from "@/app/lib/types";
 import { Input } from "./ui/input";
 import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export function DialogEdit() {
   const { dialogEditOpen, setDialogEditOpen, selectedLoop, setSelectedLoop, setLoops } = useStore()
-    const [state, actionEditLoop, pending] = useActionState(editLoop, { msg: '' })
+  const [state, actionEditLoop, pending] = useActionState(editLoop, { msg: '' })
 
+  useEffect(() => {
+    if (state.status === 'success') {
+      if (!selectedLoop) return;
+      
+      const { id, name } = selectedLoop
+      
+      setLoops((prev) => prev.map((loop) =>
+      loop.id === id ? { ...loop, name } : loop
+      ));
+      
+      setDialogEditOpen(false);
+
+      toast.success(state.msg);
+    } else if (state.status === 'fail') {
+      toast.error(state.msg);
+    }
+  }, [state]);
+    
   async function handleEdit() {
     if (!selectedLoop) return;
 
     const { id, name } = selectedLoop
     
-    actionEditLoop({ id, name })        
-    
-    setDialogEditOpen(false);
+    startTransition(() => {
+      actionEditLoop({ id, name })        
+    })
   }
 
   return (
@@ -56,7 +75,7 @@ export function DialogEdit() {
           </Button>
           <Button
             className='cursor-pointer'
-            onClick={() => startTransition(handleEdit)}
+            onClick={handleEdit}
           >
             {pending ? (
                 <div className="flex items-center gap-2">

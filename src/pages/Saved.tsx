@@ -35,7 +35,7 @@ export default function Saved({ data }: Props) {
     setSelectedLoop(loop)
   }
   
-  if (data && data.length === 0) {
+  if (filteredSortedLoops.length === 0) {
     return <p className="p-4 text-center">No saved loops.</p>;
   }
 

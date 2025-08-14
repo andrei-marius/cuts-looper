@@ -28,8 +28,9 @@ export default function NavBar() {
                 ) : (
                     <LoginLink
                         href='api/auth/login'
+                        className='underline font-semibold'
                     >
-                        Log in
+                        Log In
                     </LoginLink>
                 )}
             </nav>

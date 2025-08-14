@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, startTransition } from 'react'
+import { useActionState, startTransition, useEffect } from 'react'
 import {
   Dialog,
   DialogTrigger,
@@ -14,19 +14,36 @@ import { Button } from "./ui/button";
 import { deleteLoop } from "@/app/actions/deleteLoop";
 import { Loop } from "@/app/lib/types";
 import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export function DialogDelete() {
   const { dialogDeleteOpen, setDialogDeleteOpen, selectedLoop, setLoops } = useStore()
   const [state, actionDeleteLoop, pending] = useActionState(deleteLoop, { msg: '' })
+
+  useEffect(() => {
+    if (state.status === 'success') {
+      if (!selectedLoop) return;
+      
+      const { id } = selectedLoop
+      
+      setLoops(prev => prev.filter(loop => loop.id !== id));
+      
+      setDialogDeleteOpen(false);
+
+      toast.success(state.msg);
+    } else if (state.status === 'fail') {
+      toast.error(state.msg);
+    }
+  }, [state]);
 
   async function handleDelete() {
     if (!selectedLoop) return;
 
     const { id } = selectedLoop
 
-    actionDeleteLoop({ id })       
-     
-    setDialogDeleteOpen(false);
+    startTransition(() => {
+      actionDeleteLoop({ id })       
+    })     
   }
 
   return (
@@ -49,7 +66,7 @@ export function DialogDelete() {
           <Button
             className='cursor-pointer'
             variant="destructive"
-            onClick={() => startTransition(handleDelete)} 
+            onClick={handleDelete} 
           >
             {pending ? (
                 <div className="flex items-center gap-2">

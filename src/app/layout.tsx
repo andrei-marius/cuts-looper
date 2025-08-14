@@ -1,9 +1,8 @@
-// 'use client'
-
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import NavBar from '@/components/NavBar';
 import { Metadata } from 'next';
+import TopLoader from '@/components/PageTopLoader';
 
 export const metadata: Metadata = {
   title: "CutsLooper",
@@ -18,7 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Toaster position="top-right" />
+        <TopLoader />
+        <Toaster position="top-center" />
         <NavBar />
         {children}
       </body>

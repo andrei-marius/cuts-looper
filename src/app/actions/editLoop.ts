@@ -9,17 +9,17 @@ export async function editLoop(
 ) {
   const { id, name } = payload
 
-  if (!id) return;
+  if (!id) return { msg: 'Internal error'};
 
   const { error } = await db
     .from("loop")
     .update({ name: name })
     .eq("id", id);
 
-  if (error) return { msg: 'Error editing loop' };
+  if (error) return { status: 'fail', msg: 'Error editing loop' };
   
   revalidatePath('/saved')
   
-  return { msg: 'Loop edited' };
+  return { status: 'success', msg: 'Loop edited' };
 }
 

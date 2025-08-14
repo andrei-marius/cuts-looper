@@ -43,7 +43,7 @@ import {
                 className="w-full"
                 postLogoutRedirectURL='/'
             >
-                Log out
+                Log Out
             </LogoutLink>
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -9,13 +9,13 @@ export async function deleteLoop(
 ) {
   const { id } = payload
 
-  if (!id) return;
+  if (!id) return { msg: 'Internal error'};
 
   const { error } = await db.from("loop").delete().eq("id", id);
 
-  if (error) return { msg: 'Error deleting loop' };
+  if (error) return { status: 'fail', msg: 'Error deleting loop' };
 
   revalidatePath('/saved')
 
-  return { msg: 'Loop deleted' };
+  return { status: 'success', msg: 'Loop deleted' };
 }

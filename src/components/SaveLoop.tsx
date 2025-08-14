@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useActionState, startTransition } from 'react';
+import { useState, useActionState, startTransition, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -15,6 +15,16 @@ export function SaveLoopButton() {
   const [name, setName] = useState('');
   const { cuts, shareUrl, videoId, setShareUrl, clearCuts } = useStore();
   const [state, actionSaveLoop, pending] = useActionState(saveLoop, { msg: '' })
+
+  useEffect(() => {    
+    if (state.status === 'success') {
+      toast.success(state.msg);
+      setDialogOpen(false);
+      clearCuts();
+    } else if (state.status === 'fail') {
+      toast.error(state.msg)
+    }
+  }, [state]);
 
   const handleSaveClick = () => {
     if (!cuts.length) {
@@ -34,11 +44,9 @@ export function SaveLoopButton() {
     const link = buildShareUrl(cuts, videoId);
     setShareUrl(link);
 
-    actionSaveLoop({ name, cuts, link })
-  
-    toast.success(state.msg);
-    setDialogOpen(false);
-    clearCuts();
+    startTransition(() => {
+      actionSaveLoop({ name, cuts, link })
+    })
   };
 
   return (
@@ -73,7 +81,7 @@ export function SaveLoopButton() {
           Cancel
         </Button>
         <Button 
-          onClick={() => startTransition(handleSave)} 
+          onClick={handleSave} 
           disabled={pending}
           className='cursor-pointer'
           variant='outline'

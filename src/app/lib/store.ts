@@ -13,7 +13,7 @@ interface State {
   dialogSaveOpen: boolean;
   selectedLoop: Loop | null;
   setCuts: (cuts: Cut[]) => void;
-  setLoops: (loops: Loop[]) => void;
+  setLoops: (update: Loop[] | ((prev: Loop[]) => Loop[])) => void
   addCut: (cut: Cut) => void;
   removeCut: (index: number) => void;
   clearCuts: () => void;
@@ -39,7 +39,11 @@ export const useStore = create<State>((set) => ({
   dialogSaveOpen: false,
   selectedLoop: null,
   setCuts: (cuts) => set({ cuts }),
-  setLoops: (loops) => set({ loops }),
+  setLoops: (update: Loop[] | ((prev: Loop[]) => Loop[])) =>
+  set((state) => ({
+    loops: typeof update === 'function' ? update(state.loops) : update,
+  })),
+
   addCut: (cut) => set((state) => ({ cuts: [...state.cuts, cut] })),
   removeCut: (index) =>
     set((state) => ({ cuts: state.cuts.filter((_, i) => i !== index) })),

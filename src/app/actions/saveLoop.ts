@@ -28,9 +28,9 @@ export async function saveLoop(
     },
   ]);
 
-  if (error) return { msg: 'Error saving loop' };
+  if (error) return { status: 'fail', msg: 'Error saving loop' };
 
   revalidatePath('/')
 
-  return { msg: 'Loop saved' };
+  return { status: 'success', msg: 'Loop saved' };
 }
