@@ -12,6 +12,8 @@ interface State {
   dialogEditOpen: boolean;
   dialogSaveOpen: boolean;
   selectedLoop: Loop | null;
+  isAuthenticated: boolean | null;
+  isLoading: boolean;
   setCuts: (cuts: Cut[]) => void;
   setLoops: (update: Loop[] | ((prev: Loop[]) => Loop[])) => void
   addCut: (cut: Cut) => void;
@@ -25,6 +27,7 @@ interface State {
   setDialogEditOpen: (open: boolean) => void;
   setDialogSaveOpen: (open: boolean) => void;
   setSelectedLoop: (loop: Loop | null) => void;
+  setAuth: (auth: boolean | null) => void;
 }
 
 export const useStore = create<State>((set) => ({
@@ -38,12 +41,13 @@ export const useStore = create<State>((set) => ({
   dialogEditOpen: false,
   dialogSaveOpen: false,
   selectedLoop: null,
+  isAuthenticated: null,
+  isLoading: true,
   setCuts: (cuts) => set({ cuts }),
   setLoops: (update: Loop[] | ((prev: Loop[]) => Loop[])) =>
   set((state) => ({
     loops: typeof update === 'function' ? update(state.loops) : update,
   })),
-
   addCut: (cut) => set((state) => ({ cuts: [...state.cuts, cut] })),
   removeCut: (index) =>
     set((state) => ({ cuts: state.cuts.filter((_, i) => i !== index) })),
@@ -56,4 +60,5 @@ export const useStore = create<State>((set) => ({
   setDialogEditOpen: (open) => set({ dialogEditOpen: open }),
   setDialogSaveOpen: (open) => set({ dialogSaveOpen: open }),
   setSelectedLoop: (loop) => set({ selectedLoop: loop }),
+  setAuth: (auth) => set({ isAuthenticated: auth, isLoading: false }),
 }));

@@ -11,16 +11,15 @@ import { useSearchAndSort } from '@/app/hooks/useSearchAndSort';
 import { useStore } from '@/app/lib/store';
 import { DialogDelete } from '@/components/DialogDelete';
 import { DialogEdit } from '@/components/DialogEdit';
-
 interface Props {
-  data: Loop[] | null
+  data: Loop[]
 }
 
 export default function Saved({ data }: Props) {
   const { searchTerm, sortOrder, setLoops, setDialogDeleteOpen, setDialogEditOpen, setSelectedLoop } = useStore();
 
   useEffect(() => {
-    if (data) setLoops(data)
+    setLoops(data)
   }, [])
 
   const filteredSortedLoops = useSearchAndSort({ searchTerm, sortOrder });
@@ -35,7 +34,7 @@ export default function Saved({ data }: Props) {
     setSelectedLoop(loop)
   }
   
-  if (filteredSortedLoops.length === 0) {
+  if (data.length === 0) {
     return <p className="p-4 text-center">No saved loops.</p>;
   }
 
@@ -126,36 +125,3 @@ export default function Saved({ data }: Props) {
     </>
   );
 }
-
-  // if (isAuthLoading) {
-  //   return (
-  //       <Loader2 className="animate-spin h-10 w-10 mt-4 mx-auto" />
-  //   );
-  // }
-
-  // if (!isAuthenticated || !user) {
-  //   return <p className="p-4 text-center">You need to be logged in to view saved loops.</p>;
-  // }
-
-  // if (loading) {
-  //   return (
-  //     <div className="p-4">
-  //       <h1 className="text-xl font-semibold mb-4">Saved Loops</h1>
-  //       <table className="min-w-full border border-gray-300 text-sm">
-  //         <thead className="bg-gray-100">
-  //           <tr>
-  //             <th className="border px-4 py-2 text-left">Name</th>
-  //             <th className="border px-4 py-2 text-left">Share URL</th>
-  //             <th className="border px-4 py-2 text-left">Cuts</th>
-  //             <th className="border px-4 py-2 text-left">Created At</th>
-  //             <th className="border px-4 py-2 text-left">Actions</th>
-  //           </tr>
-  //         </thead>
-  //         <tbody>
-  //           {Array(5).fill(0).map((_, i) => <SkeletonRow key={i} />)}
-  //         </tbody>
-  //       </table>
-  //     </div>
-  //   );
-  // }
-

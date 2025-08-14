@@ -1,3 +1,5 @@
+'use client'
+
 import { useDebounce } from "./useDebounce";
 import { useMemo } from "react";
 import { useStore } from "@/app/lib/store";

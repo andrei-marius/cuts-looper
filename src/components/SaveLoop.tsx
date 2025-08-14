@@ -21,6 +21,7 @@ export function SaveLoopButton() {
       toast.success(state.msg);
       setDialogOpen(false);
       clearCuts();
+      setName('')
     } else if (state.status === 'fail') {
       toast.error(state.msg)
     }
