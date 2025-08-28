@@ -1,7 +1,7 @@
 'use client';
 
 import { LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
-import { UserDropdown } from '@/components/UserDropdown';
+import UserDropdown from '@/components/UserDropdown';
 import { Loader2 } from 'lucide-react';
 import useAuth from '../app/hooks/useAuth';
 import Link from 'next/link';

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -12,7 +11,7 @@ import { Search } from 'lucide-react';
 import { useStore } from '@/app/lib/store';
 import { Input } from './ui/input';
 
-export function SearchAndSort() {
+export default function SearchAndSort() {
   const { searchTerm, setSearchTerm, sortOrder, setSortOrder } = useStore();
 
   return (

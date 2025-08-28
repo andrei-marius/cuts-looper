@@ -1,54 +1,48 @@
 'use client'
 
-import { useActionState, startTransition, useEffect } from 'react'
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { useStore } from "@/app/lib/store";
 import { Button } from "./ui/button";
-import { deleteLoop } from "@/app/actions/deleteLoop";
-import { Loop } from "@/app/lib/types";
+import deleteLoop from "@/app/actions/deleteLoop";
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export function DialogDelete() {
-  const { dialogDeleteOpen, setDialogDeleteOpen, selectedLoop, setLoops } = useStore()
-  const [state, actionDeleteLoop, pending] = useActionState(deleteLoop, { msg: '' })
+export default function DialogDelete() {
+  const { dialogDeleteOpen, setDialogDeleteOpen, selectedLoop } = useStore()
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (state.status === 'success') {
-      if (!selectedLoop) return;
-      
-      const { id } = selectedLoop
-      
-      setLoops(prev => prev.filter(loop => loop.id !== id));
-      
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedLoop) throw new Error("Internal error");
+      return deleteLoop(selectedLoop.id);
+    },
+    onSuccess: (res) => {
+      toast.success(res.msg);
+      queryClient.invalidateQueries({ queryKey: ["loops"] });
       setDialogDeleteOpen(false);
-
-      toast.success(state.msg);
-    } else if (state.status === 'fail') {
-      toast.error(state.msg);
+    },
+    onError: () => {
+      toast.error("Error deleting loop");
     }
-  }, [state]);
-
-  async function handleDelete() {
-    if (!selectedLoop) return;
-
-    const { id } = selectedLoop
-
-    startTransition(() => {
-      actionDeleteLoop({ id })       
-    })     
-  }
+  });
 
   return (
     <Dialog open={dialogDeleteOpen} onOpenChange={setDialogDeleteOpen}>
-      <DialogContent>
+      <DialogContent 
+        className='
+          sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 
+          sm:rounded-lg
+          fixed bottom-0 left-0 right-0 sm:bottom-auto
+          rounded-t-2xl
+          max-h-[80dvh] overflow-y-auto
+        '
+      >
         <DialogHeader>
           <DialogTitle>Delete Loop</DialogTitle>
         </DialogHeader>
@@ -66,9 +60,10 @@ export function DialogDelete() {
           <Button
             className='cursor-pointer'
             variant="destructive"
-            onClick={handleDelete} 
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending}
           >
-            {pending ? (
+            {mutation.isPending ? (
                 <div className="flex items-center gap-2">
                     <Loader2 className="animate-spin h-4 w-4" />
                 Deleting...

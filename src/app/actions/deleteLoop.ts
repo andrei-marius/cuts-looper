@@ -1,21 +1,16 @@
 'use server'
 
-import { db } from '@/app/lib/db';
-import { revalidatePath } from 'next/cache'
+import db from '@/app/lib/db';
 
-export async function deleteLoop(
-  _prevState: { msg: string } | undefined,
-  payload: { id: string }
-) {
-  const { id } = payload
-
+export default async function deleteLoop(id: string) {
   if (!id) return { msg: 'Internal error'};
 
-  const { error } = await db.from("loop").delete().eq("id", id);
+  const { error } = await db
+    .from("loop")
+    .delete()
+    .eq("id", id);
 
-  if (error) return { status: 'fail', msg: 'Error deleting loop' };
+  if (error) return { msg: 'Error deleting loop' };
 
-  revalidatePath('/saved')
-
-  return { status: 'success', msg: 'Loop deleted' };
+  return { msg: 'Loop deleted' };
 }

@@ -1,16 +1,17 @@
 'use client'
 
-import { useDebounce } from "./useDebounce";
+import useDebounce from "./useDebounce";
 import { useMemo } from "react";
 import { useStore } from "@/app/lib/store";
+import { Loop } from "../lib/types";
 
 interface Props {
   searchTerm: string;
   sortOrder: "newest" | "oldest";
+  loops: Loop[];
 }
 
-export function useSearchAndSort({ searchTerm, sortOrder }: Props) {
-  const { loops } = useStore();
+export default function useSearchAndSort({ searchTerm, sortOrder, loops }: Props) {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const filteredSortedLoops = useMemo(() => {

@@ -6,13 +6,13 @@ import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 
 export default function useAuth() {
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
-  const { setAuth, ...store } = useStore();
+  const { setAuth, isAuthenticated: isAuthenticatedLocal } = useStore();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated !== useStore.getState().isAuthenticated) {
+    if (!isLoading && isAuthenticated !== isAuthenticatedLocal) {
       setAuth(isAuthenticated);
     }
-  }, [isAuthenticated, isLoading, setAuth]);
+  }, [isAuthenticated, isLoading]);
 
-  return store;
+  return { setAuth, isAuthenticated: isAuthenticatedLocal, isLoading };
 }

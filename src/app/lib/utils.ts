@@ -35,3 +35,28 @@ export const buildShareUrl = (cuts: Cut[], videoId: string | null) => {
 
   return link
 }
+
+export const extractVideoId = (input: string): string | null => {
+    const trimmed = input.trim();
+  
+    // If it's a raw video ID (11 characters, alphanumeric, common in YT)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      return trimmed;
+    }
+  
+    try {
+      const url = new URL(trimmed);
+      const hostname = url.hostname;
+      const searchParams = url.searchParams;
+  
+      if (hostname.includes('youtube.com')) {
+        return searchParams.get('v');
+      } else if (hostname === 'youtu.be') {
+        return url.pathname.slice(1);
+      }
+    } catch {
+      // Ignore invalid URL, fallback already handled
+    }
+  
+    return null;
+  };

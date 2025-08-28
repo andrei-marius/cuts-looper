@@ -1,23 +1,15 @@
 'use server'
 
-import { db } from '@/app/lib/db';
+import db from '@/app/lib/db';
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Cut } from '../lib/types';
-import { revalidatePath } from 'next/cache'
 
-export async function saveLoop(
-  _prevState: { msg: string } | undefined,
-  payload: { name: string; cuts: Cut[]; link: string }
-) {
-  const { isAuthenticated, getUser } = getKindeServerSession();
-  const isUserAuthenticated = await isAuthenticated();
+export default async function saveLoop(name: string, cuts: Cut[], link: string) {
+  if (!name || !cuts || !link) return { msg: 'Internal error'};
 
-  if (!isUserAuthenticated) return { msg: 'Not logged in' };
-
+  const { getUser } = getKindeServerSession();
   const user = await getUser();
-  if (!user) return { msg: 'No user' };
-
-  const { name, cuts, link } = payload
+  if (!user) throw new Error('Internal error');
 
   const { error } = await db.from('loop').insert([
     {
@@ -28,9 +20,7 @@ export async function saveLoop(
     },
   ]);
 
-  if (error) return { status: 'fail', msg: 'Error saving loop' };
+  if (error) throw new Error('Error saving loop');
 
-  revalidatePath('/')
-
-  return { status: 'success', msg: 'Loop saved' };
+  return { msg: 'Loop saved' };
 }
