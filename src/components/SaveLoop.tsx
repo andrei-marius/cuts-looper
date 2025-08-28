@@ -15,20 +15,21 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 interface Props {
   videoId: string;
   setVideoId: Dispatch<SetStateAction<string>>;
+  setUrl: Dispatch<SetStateAction<string>>;
 }
 
-export default function SaveLoop({ videoId, setVideoId }: Props) {
+export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
-  const { cuts, shareUrl, setShareUrl, clearCuts } = useStore();
-  const { isAuthenticated, isLoading } = useKindeBrowserClient()
+  const { cuts, setShareUrl, clearCuts } = useStore();
+  const { isAuthenticated } = useKindeBrowserClient()
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const link = buildShareUrl(cuts, videoId);
-      setShareUrl(link);
-      return saveLoop(name, cuts, link)
+      const url = buildShareUrl(cuts, videoId);
+      setShareUrl(url);
+      return saveLoop(name, cuts, url)
     },
     onSuccess: (res) => {
         toast.success(res.msg);
@@ -37,13 +38,14 @@ export default function SaveLoop({ videoId, setVideoId }: Props) {
         clearCuts();
         setName('')
         setVideoId('')
+        setUrl('')
     },
     onError: (err) => {
       toast.error(err.message);
     }
   });
 
-  const handleSaveClick = async () => {
+  const handleClickOpenSave = async () => {
     if (!isAuthenticated) {
       toast.error('You need to log in to save loops');
       return;
@@ -69,7 +71,7 @@ export default function SaveLoop({ videoId, setVideoId }: Props) {
   return (
     <>
       <Button 
-        onClick={handleSaveClick} 
+        onClick={handleClickOpenSave} 
         variant="outline"
         className='cursor-pointer'
       >
@@ -92,7 +94,7 @@ export default function SaveLoop({ videoId, setVideoId }: Props) {
           </DialogHeader>
           <div className="space-y-2">
             <Input
-              placeholder="Enter a name"
+              placeholder="Enter a Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />

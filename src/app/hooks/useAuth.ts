@@ -14,5 +14,5 @@ export default function useAuth() {
     }
   }, [isAuthenticated, isLoading]);
 
-  return { setAuth, isAuthenticated: isAuthenticatedLocal, isLoading };
+  return { isAuthenticated: isLoading ? null : isAuthenticatedLocal };
 }

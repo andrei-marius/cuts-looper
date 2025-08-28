@@ -7,7 +7,7 @@ import useAuth from '../app/hooks/useAuth';
 import Link from 'next/link';
 
 export default function NavBar() {
-    const { isAuthenticated, isLoading } = useAuth()
+    const { isAuthenticated } = useAuth()
 
     return (
         <header className='w-full h-[80px] shadow-md shadow-gray-300 p-5'>
@@ -22,17 +22,12 @@ export default function NavBar() {
                     CutsLooper
                 </Link>
 
-                {isLoading ? (
+                {isAuthenticated === null ? (
                     <Loader2 className="animate-spin h-6 w-6 ml-auto" />
                 ) : isAuthenticated ? (
                     <UserDropdown />
                 ) : (
-                    <LoginLink
-                        href='api/auth/login'
-                        className='underline'
-                    >
-                        Log In
-                    </LoginLink>
+                    <LoginLink href='api/auth/login' className='underline'>Log In</LoginLink>
                 )}
             </nav>
         </header>

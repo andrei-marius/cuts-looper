@@ -10,37 +10,42 @@ import { buildShareUrl } from '@/app/lib/utils';
 interface Props {
   videoId: string;
   setVideoId: Dispatch<SetStateAction<string>>;
+  setUrl: Dispatch<SetStateAction<string>>;
 }
 
-export default function ShareAndSave({ videoId, setVideoId }: Props) {
+export default function ShareAndSave({ videoId, setVideoId, setUrl }: Props) {
   const { cuts, setShareUrl } = useStore()
   
-  const handleGenerateShareLink = () => {
+  const handleGenerateShareUrl = () => {
     if (cuts.length === 0) {
       toast.error('Add at least one Cut first');
       setShareUrl('');
       return;
     }
 
-    const link = buildShareUrl(cuts, videoId);
+    const url = buildShareUrl(cuts, videoId);
     
-    setShareUrl(link);
-    navigator.clipboard.writeText(link);
-    toast.success('Copied Share Link');
-    return link;
+    setShareUrl(url);
+    navigator.clipboard.writeText(url);
+    toast.success('Copied Share URL');
+    return url;
   };
   
   return (
     <div className="flex items-center justify-center mt-10 space-x-4">
       <Button
-        onClick={handleGenerateShareLink}
+        onClick={handleGenerateShareUrl}
         variant='outline'
         className='cursor-pointer'
       >
-        🔗 Generate Share Link
+        🔗 Generate Share URL
       </Button>
 
-      <SaveLoop videoId={videoId} setVideoId={setVideoId} />
+      <SaveLoop 
+        videoId={videoId} 
+        setVideoId={setVideoId}
+        setUrl={setUrl}
+      />
     </div>
   )
 }

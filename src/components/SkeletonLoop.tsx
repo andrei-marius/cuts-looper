@@ -1,7 +1,6 @@
 export default function SkeletonLoop() {
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Saved Loops</h1>
+    <>
       <table className="min-w-full border border-gray-300 text-sm">
         <thead className="bg-gray-100">
           <tr>
@@ -27,6 +26,6 @@ export default function SkeletonLoop() {
           )}
         </tbody>
       </table>
-    </div>
+    </>
   );
 }

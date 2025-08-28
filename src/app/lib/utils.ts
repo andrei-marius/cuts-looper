@@ -31,9 +31,9 @@ export function formatTime(seconds: number) {
 
 export const buildShareUrl = (cuts: Cut[], videoId: string | null) => {
   const cutsParam = encodeURIComponent(JSON.stringify(cuts));
-  const link = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
+  const url = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
 
-  return link
+  return url
 }
 
 export const extractVideoId = (input: string): string | null => {

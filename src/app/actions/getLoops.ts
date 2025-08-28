@@ -9,7 +9,7 @@ export default async function getLoops() {
   const user = await getUser();
 
   if (!isUserAuthenticated || !user) {
-    throw new Error("Unauthorized, you need to log in to view saved loops.");
+    throw new Error("You need to be logged in to view saved loops.");
   }
 
   // TODO: SS pagination
@@ -19,7 +19,7 @@ export default async function getLoops() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  if (error) throw new Error('Internal error');
+  if (error) throw new Error('Internal Error');
 
   return loops;
 }

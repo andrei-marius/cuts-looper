@@ -19,7 +19,7 @@ export default function DialogDelete() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!selectedLoop) throw new Error("Internal error");
+      if (!selectedLoop) throw new Error("Internal Error");
       return deleteLoop(selectedLoop.id);
     },
     onSuccess: (res) => {
@@ -27,8 +27,8 @@ export default function DialogDelete() {
       queryClient.invalidateQueries({ queryKey: ["loops"] });
       setDialogDeleteOpen(false);
     },
-    onError: () => {
-      toast.error("Error deleting loop");
+    onError: (err) => {
+      toast.error(err.message);
     }
   });
 

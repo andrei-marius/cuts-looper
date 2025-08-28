@@ -10,7 +10,6 @@ interface State {
   dialogEditOpen: boolean;
   selectedLoop: Loop | null;
   isAuthenticated: boolean | null;
-  isLoading: boolean;
   setCuts: (cuts: Cut[]) => void;
   addCut: (cut: Cut) => void;
   removeCut: (index: number) => void;
@@ -33,7 +32,6 @@ export const useStore = create<State>((set) => ({
   dialogEditOpen: false,
   selectedLoop: null,
   isAuthenticated: null,
-  isLoading: true,
   setCuts: (cuts) => set({ cuts }),
   addCut: (cut) => set((state) => ({ cuts: [...state.cuts, cut] })),
   removeCut: (index) =>
@@ -45,5 +43,5 @@ export const useStore = create<State>((set) => ({
   setDialogDeleteOpen: (open) => set({ dialogDeleteOpen: open }),
   setDialogEditOpen: (open) => set({ dialogEditOpen: open }),
   setSelectedLoop: (loop) => set({ selectedLoop: loop }),
-  setAuth: (auth) => set({ isAuthenticated: auth, isLoading: false }),
+  setAuth: (auth) => set({ isAuthenticated: auth }),
 }));

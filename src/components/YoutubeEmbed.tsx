@@ -14,6 +14,7 @@ export default function YouTubeEmbed() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [videoId, setVideoId] = useState<string>('')
+  const [url, setUrl] = useState<string>('')
 
   const {
     cuts,
@@ -78,32 +79,10 @@ export default function YouTubeEmbed() {
     };
   }
   
-  // useEffect(() => {
-  //   if (!videoId) return;
-
-  //   const tag = document.createElement('script');
-  //   tag.src = 'https://www.youtube.com/iframe_api';
-  //   document.body.appendChild(tag);
-
-  //   (window as any).onYouTubeIframeAPIReady = () => {
-  //     playerRef.current = new (window as any).YT.Player('ytplayer', {
-  //       videoId,
-  //       events: {
-  //         onReady: autoplay ? () => startCutLoop() : undefined,
-  //         onStateChange: onPlayerStateChange,
-  //       },
-  //     });
-  //   };
-
-  //   return () => {
-  //     if (intervalRef.current) clearInterval(intervalRef.current);
-  //   };
-  // }, [videoId]);
-  
-  const handleUrlPasteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value;
-    const id = extractVideoId(text);
+  const handleUrlPasteChange = (e: React.ChangeEvent<HTMLInputElement>) => {    
+    const id = extractVideoId(e.target.value);
     if (id) {
+      setUrl(e.target.value)
       setVideoId(id);
       embedYtVideo(id);
       setCuts([]);
@@ -139,16 +118,17 @@ export default function YouTubeEmbed() {
 
   return (
     <>
-      <h1 className="text-xl mb-4 font-bold">Paste or type YouTube URL or Video ID or Share Link</h1>
+      <h1 className="text-xl mb-4 font-bold">Paste or type YouTube URL or Video ID or Share URL</h1>
 
       <input
         type="text"
         onChange={handleUrlPasteChange}
         className="w-full p-2 border rounded mb-4"
-        placeholder="Youtube URL/Video ID/Share Link"
+        placeholder="Youtube URL/Video ID/Share URL"
+        value={url}
       />
   
-      { videoId && (
+      {videoId && (
         <div className="flex flex-col items-center gap-4">
           <div className="aspect-[16/9] w-full max-w-3xl">
             <div id="ytplayer" className="w-full h-full rounded-md" />
@@ -165,11 +145,12 @@ export default function YouTubeEmbed() {
             
             <Cuts />
 
-            <ShareAndSave videoId={videoId} setVideoId={setVideoId} />
+            <ShareAndSave 
+              videoId={videoId} 
+              setVideoId={setVideoId} 
+              setUrl={setUrl} 
+            />
 
-            {/* {shareUrl && (
-              <div className="mt-2 text-sm break-all text-gray-800">{shareUrl}</div>
-            )} */}
           </div>
         </div>
       )}

@@ -21,7 +21,7 @@ export default function DialogEdit() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!selectedLoop) throw new Error("Internal error");
+      if (!selectedLoop) throw new Error("Internal Error");
 
       const { id, name } = selectedLoop
 
@@ -32,8 +32,8 @@ export default function DialogEdit() {
       queryClient.invalidateQueries({ queryKey: ["loops"] });
       setDialogEditOpen(false);
     },
-    onError: () => {
-      toast.error("Error editing loop");
+    onError: (err) => {
+      toast.error(err.message);
     }
   });
 
