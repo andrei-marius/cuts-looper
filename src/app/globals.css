@@ -146,4 +146,10 @@ body {
       margin-right: 0.5rem;
     }
   }
+
+  @media (max-width: 1280px) {
+    .max-md\:top {
+      top: 30%;
+    }
+  }
 }

@@ -10,115 +10,108 @@ import { extractVideoId } from '@/app/lib/utils';
 
 export default function YouTubeEmbed() {
   const playerRef = useRef<any>(null);
-  const currentCut = useRef(0);
+  const currentCut = useRef<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [videoId, setVideoId] = useState<string>('')
-  const [url, setUrl] = useState<string>('')
+  const [videoId, setVideoId] = useState<string>('');
+  const [url, setUrl] = useState<string>('');
 
-  const {
-    cuts,
-    setCuts,
-    setShareUrl,
-  } = useStore();
+  const { cuts, setCuts, setShareUrl } = useStore();
 
+  // Load from URL params on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const v = params.get('v');
     const cutsParam = params.get('cuts');
+
+    if (v) {
+      setVideoId(v);
+      setUrl(`https://www.youtube.com/watch?v=${v}`);
+    }
+
     if (v && cutsParam) {
       try {
         const parsed: Cut[] = JSON.parse(decodeURIComponent(cutsParam));
         if (parsed.length) {
           embedYtVideo(v);
           setCuts(parsed);
-          // setAutoplay(true);
         }
       } catch {
         console.error('Invalid cuts param');
       }
     }
-  }, []);
 
-  function embedYtVideo(videoId: string) {
-    if (!window['YT']) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      document.body.appendChild(tag);
-    }
-
-    if (playerRef.current && playerRef.current.destroy) {
-      playerRef.current.destroy();
-      playerRef.current = null;
-    }
-  
-    const createPlayer = () => {
-      playerRef.current = new (window as any).YT.Player('ytplayer', {
-        videoId,
-        events: {
-          onReady: undefined, //autoplay ? () => startCutLoop() : undefined,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    };
-  
-    if ((window as any).YT && (window as any).YT.Player) {
-      createPlayer();
-    } else {
-      (window as any).onYouTubeIframeAPIReady = () => {
-        createPlayer();
-      };
-    }
-  
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      if (playerRef.current && playerRef.current.destroy) {
+      if (playerRef.current?.destroy) {
         playerRef.current.destroy();
         playerRef.current = null;
       }
     };
+  }, []);
+
+  function embedYtVideo(id: string) {
+    const createPlayer = () => {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+      playerRef.current = new (window as any).YT.Player('ytplayer', {
+        videoId: id,
+        events: {
+          onStateChange: onPlayerStateChange,
+        },
+      });
+    };
+
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(tag);
+
+      const prevReady = (window as any).onYouTubeIframeAPIReady;
+      (window as any).onYouTubeIframeAPIReady = () => {
+        prevReady?.();
+        createPlayer();
+      };
+    } else if ((window as any).YT?.Player) {
+      createPlayer();
+    }
   }
-  
-  const handleUrlPasteChange = (e: React.ChangeEvent<HTMLInputElement>) => {    
+
+  const handleUrlPasteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = extractVideoId(e.target.value);
     if (id) {
-      setUrl(e.target.value)
+      setUrl(e.target.value);
       setVideoId(id);
       embedYtVideo(id);
       setCuts([]);
       setShareUrl('');
+    } else {
+      setUrl(e.target.value); 
     }
   };
 
-  // const onPlayerReady = () => {
-  //   // Do NOT auto-play on ready anymore
-  //   playerRef.current.pauseVideo();
-  //   setIsPlaying(false);
-  //   setIsFinished(false);
-  //   currentCut.current = 0;
-  // };
-
   const onPlayerStateChange = (event: any) => {
-    // If user manually pauses video during cuts, stop the loop
     if (event.data === (window as any).YT.PlayerState.PAUSED) {
       const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
       const cut = cuts[currentCut.current];
-    
       if (
         isPlaying &&
         cut &&
-        currentTime > cut.start + 0.3 // tolerate slight float inaccuracy
+        currentTime > cut.start + 0.3
       ) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         setIsPlaying(false);
       }
     }
-    
   };
 
   return (
     <>
-      <h1 className="text-xl mb-4 font-bold">Paste or type YouTube URL or Video ID or Share URL</h1>
+      <h1 className="text-xl mb-4 font-bold">
+        Paste or type YouTube URL or Video ID or Share URL
+      </h1>
 
       <input
         type="text"
@@ -127,33 +120,30 @@ export default function YouTubeEmbed() {
         placeholder="Youtube URL/Video ID/Share URL"
         value={url}
       />
-  
+
       {videoId && (
         <div className="flex flex-col items-center gap-4">
           <div className="aspect-[16/9] w-full max-w-3xl">
             <div id="ytplayer" className="w-full h-full rounded-md" />
           </div>
 
-          <PlayManager 
-            playerRef={playerRef} 
-            currentCut={currentCut} 
+          <PlayManager
+            playerRef={playerRef}
+            currentCut={currentCut}
             intervalRef={intervalRef}
             setIsPlaying={setIsPlaying}
           />
 
           <div className="mb-4">
-            
             <Cuts />
-
-            <ShareAndSave 
-              videoId={videoId} 
-              setVideoId={setVideoId} 
-              setUrl={setUrl} 
+            <ShareAndSave
+              videoId={videoId}
+              setVideoId={setVideoId}
+              setUrl={setUrl}
             />
-
           </div>
         </div>
       )}
     </>
-  ); 
+  );
 }

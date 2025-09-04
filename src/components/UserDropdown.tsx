@@ -27,7 +27,7 @@ import {
           <DropdownMenuItem asChild className="cursor-pointer">
             <LogoutLink
                 className="w-full"
-                postLogoutRedirectURL={process.env.NEXT_PUBLIC_KINDE_POST_LOGOUT_REDIRECT_URL}
+                postLogoutRedirectURL={process.env.KINDE_POST_LOGOUT_REDIRECT_URL}
             >
                 Log Out
             </LogoutLink>

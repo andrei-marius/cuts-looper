@@ -28,9 +28,9 @@ export default function DialogEdit() {
       return editLoop(id, name );
     },
     onSuccess: (res) => {
-      toast.success(res.msg);
       queryClient.invalidateQueries({ queryKey: ["loops"] });
       setDialogEditOpen(false);
+      toast.success(res.msg);
     },
     onError: (err) => {
       toast.error(err.message);
@@ -39,15 +39,7 @@ export default function DialogEdit() {
 
   return (
     <Dialog open={dialogEditOpen} onOpenChange={setDialogEditOpen}>
-      <DialogContent 
-        className='
-          sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 
-          sm:rounded-lg
-          fixed bottom-0 left-0 right-0 sm:bottom-auto
-          rounded-t-2xl
-          max-h-[80dvh] overflow-y-auto
-        '
-      >
+      <DialogContent className='max-md:top'>
         <DialogHeader>
           <DialogTitle>Edit Loop Name</DialogTitle>
         </DialogHeader>

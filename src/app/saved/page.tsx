@@ -18,7 +18,13 @@ export default function Saved() {
 
   const { data: loops, error, isLoading } = useQuery({
     queryKey: ['loops'],
-    queryFn: getLoops,
+    queryFn: async () => {
+      const result = await getLoops();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      return result.data;
+    },
   });
 
   const filteredSortedLoops = useSearchAndSort({
@@ -38,12 +44,12 @@ export default function Saved() {
     setSelectedLoop(loop)
   }
 
-  if (error) return <p className="p-4 text-center">Error loading saved loops.</p>;
+  if (error) return <p className="p-4 text-center">{error.message}</p>;
 
   return (
     <>
       <div className="p-4">
-        <div className="overflow-x-auto max-w-full">
+        <div className="max-w-full">
           {isLoading || !loops ? (
             <SkeletonLoop />
           ) : loops.length === 0 ? (
@@ -54,59 +60,71 @@ export default function Saved() {
 
               <SearchAndSort />
 
-              <table className="min-w-full border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border px-4 py-2 text-left">Name</th>
-                    <th className="border px-4 py-2 text-left">Share URL</th>
-                    <th className="border px-4 py-2 text-left">Cuts</th>
-                    <th className="border px-4 py-2 text-left">Created at</th>
-                    <th className="border px-4 py-2 text-left">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSortedLoops.length === 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-300 text-sm">
+                  <thead className="bg-gray-100">
                     <tr>
-                      <td colSpan={5} className="p-4 text-center text-gray-500">
-                        No loops match your search.
-                      </td>
+                      <th className="border px-4 py-2 text-left">Name</th>
+                      <th className="border px-4 py-2 text-left">Share URL</th>
+                      <th className="border px-4 py-2 text-left">Cuts</th>
+                      <th className="border px-4 py-2 text-left">Created at</th>
+                      <th className="border px-4 py-2 text-left">Actions</th>
                     </tr>
-                  ) : (
-                    filteredSortedLoops.map((loop: Loop) => (
-                      <tr key={loop.id}>
-                        <td className="border px-4 py-2">{loop.name}</td>
-                        <td className="border px-4 py-2">
-                          <Link href={loop.share_url} target="_blank" rel="noopener noreferrer" className="underline">
-                            Open Link
-                          </Link>
-                        </td>
-                        <td className="border px-4 py-2 whitespace-pre-wrap max-w-xs text-sm text-gray-800">
-                          {Array.isArray(loop.cuts) && loop.cuts.length > 0 ? (
-                            <ul className="space-y-1">
-                              {loop.cuts.map((cut: any, i: number) => (
-                                <li key={i}>
-                                  {formatTime(cut.start)} → {formatTime(cut.end)}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <span className="text-gray-500 italic">No cuts</span>
-                          )}
-                        </td>
-                        <td className="border px-4 py-2">{new Date(loop.created_at).toLocaleString()}</td>
-                        <td className="border px-4 py-2 space-x-2">
-                          <Button onClick={() => handleEdit(loop)} variant="outline" className="cursor-pointer">
-                            ✏️ Edit
-                          </Button>
-                          <Button onClick={() => handleDelete(loop)} variant="outline" className="cursor-pointer">
-                            🗑️ Delete
-                          </Button>
+                  </thead>
+                  <tbody>
+                    {filteredSortedLoops.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="p-4 text-center text-gray-500">
+                          No loops match your search.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filteredSortedLoops.map((loop: Loop) => (
+                        <tr key={loop.id}>
+                          <td className="border px-4 py-2">{loop.name}</td>
+                          <td className="border px-4 py-2">
+                            <Link href={loop.share_url} target="_blank" rel="noopener noreferrer" className="underline">
+                              Open Link
+                            </Link>
+                          </td>
+                          <td className="border px-4 py-2 whitespace-pre-wrap max-w-xs text-sm text-gray-800">
+                            {Array.isArray(loop.cuts) && loop.cuts.length > 0 ? (
+                              <ul className="space-y-1">
+                                {loop.cuts.map((cut: any, i: number) => (
+                                  <li key={i}>
+                                    {formatTime(cut.start)} → {formatTime(cut.end)}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <span className="text-gray-500 italic">No cuts</span>
+                            )}
+                          </td>
+                          <td className="border px-4 py-2">
+                            {new Date(loop.created_at).toLocaleString()}
+                            </td>
+                          <td className="border px-4 py-2 space-x-2">
+                            <Button 
+                              onClick={() => handleEdit(loop)} 
+                              variant="outline" 
+                              className="cursor-pointer max-md:gap-r max-md:gap-y"
+                            >
+                              ✏️ Edit
+                            </Button>
+                            <Button 
+                              onClick={() => handleDelete(loop)} 
+                              variant="outline" 
+                              className="cursor-pointer max-md:gap-y"
+                            >
+                              🗑️ Delete
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </>
           )}
         </div>

@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { buildShareUrl } from '@/app/lib/utils';
 import saveLoop from '@/app/actions/saveLoop';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 interface Props {
   videoId: string;
@@ -23,7 +23,6 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
   const [name, setName] = useState<string>('');
   const { cuts, setShareUrl, clearCuts } = useStore();
   const { isAuthenticated } = useKindeBrowserClient()
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -32,13 +31,12 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
       return saveLoop(name, cuts, url)
     },
     onSuccess: (res) => {
-        toast.success(res.msg);
-        queryClient.invalidateQueries({ queryKey: ["loops"] });
-        setDialogOpen(false);
-        clearCuts();
-        setName('')
-        setVideoId('')
-        setUrl('')
+      setDialogOpen(false);
+      toast.success(res.msg);
+      clearCuts();
+      setName('')
+      setVideoId('')
+      setUrl('')
     },
     onError: (err) => {
       toast.error(err.message);
@@ -47,7 +45,7 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
 
   const handleClickOpenSave = async () => {
     if (!isAuthenticated) {
-      toast.error('You need to log in to save loops');
+      toast.error('You need to be logged in to save loops');
       return;
     }
 
@@ -79,16 +77,7 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent 
-          className='
-            sm:max-w-md
-            sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 
-            sm:rounded-lg
-            fixed bottom-0 left-0 right-0 sm:bottom-auto
-            rounded-t-2xl
-            max-h-[80dvh] overflow-y-auto
-          '
-        >
+        <DialogContent className='max-md:top'>
           <DialogHeader>
             <DialogTitle>Save Your Loop</DialogTitle>
           </DialogHeader>

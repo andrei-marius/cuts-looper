@@ -23,9 +23,9 @@ export default function DialogDelete() {
       return deleteLoop(selectedLoop.id);
     },
     onSuccess: (res) => {
-      toast.success(res.msg);
       queryClient.invalidateQueries({ queryKey: ["loops"] });
       setDialogDeleteOpen(false);
+      toast.success(res.msg);
     },
     onError: (err) => {
       toast.error(err.message);
@@ -34,15 +34,7 @@ export default function DialogDelete() {
 
   return (
     <Dialog open={dialogDeleteOpen} onOpenChange={setDialogDeleteOpen}>
-      <DialogContent 
-        className='
-          sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 
-          sm:rounded-lg
-          fixed bottom-0 left-0 right-0 sm:bottom-auto
-          rounded-t-2xl
-          max-h-[80dvh] overflow-y-auto
-        '
-      >
+      <DialogContent className='max-md:top'>
         <DialogHeader>
           <DialogTitle>Delete Loop</DialogTitle>
         </DialogHeader>
