@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { timestampToSeconds, secondsToTimestamp } from '@/app/lib/utils';
 import { useStore } from '@/app/lib/store';
 import { Button } from './ui/button';
+import { Plus, X, MoveRight } from 'lucide-react';
 
 export default function Cuts() {
   const [newStart, setNewStart] = useState('');
@@ -43,7 +44,8 @@ export default function Cuts() {
           className="flex-1 p-2 border rounded"
         />
         <Button onClick={addCutFunc} variant="outline" className="cursor-pointer">
-          ➕ Add
+          <Plus />
+          Add
         </Button>
       </div>
 
@@ -51,16 +53,16 @@ export default function Cuts() {
         <ul className="list-disc list-inside text-sm text-gray-700 mb-4 mt-2 space-y-2">
           {cuts.map((c, i) => (
             <li key={i} className="flex justify-center items-center mb-0">
-              <span>
-                {secondsToTimestamp(c.start)} → {secondsToTimestamp(c.end)}
-              </span>
+              {secondsToTimestamp(c.start)}
+              <MoveRight className="inline w-4 h-4 mx-1" />
+              {secondsToTimestamp(c.end)}
               <Button
                 onClick={() => removeCut(i)}
                 variant="ghost"
                 size="icon"
-                className="ml-2 cursor-pointer"
+                className="ml-2 cursor-pointer hover:bg-red-50"
               >
-                ❌
+                <X color="red" strokeWidth={3} />
               </Button>
             </li>
           ))}

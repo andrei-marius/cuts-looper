@@ -1,8 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { formatTime } from '@/app/lib/utils';
-import Link from 'next/link';
 import { Loop } from '@/app/lib/types';
 import SearchAndSort from '@/components/SearchAndSort';
 import useSearchAndSort from '@/app/hooks/useSearchAndSort';
@@ -15,6 +12,7 @@ import getLoops from '../actions/getLoops';
 import useAuth from '../hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import Pagination from '@/components/Pagination';
+import LoopRow from '@/components/Loop';
 
 export default function Saved() {
   const { searchTerm, sortOrder, setDialogDeleteOpen, setDialogEditOpen, setSelectedLoop } =
@@ -81,11 +79,11 @@ export default function Saved() {
                     <table className="w-full border border-gray-300 text-sm">
                       <thead className="bg-gray-100">
                         <tr>
+                          <th className="border px-4 py-2 w-10"></th>
                           <th className="border px-4 py-2 text-left">Name</th>
                           <th className="border px-4 py-2 text-left">Share URL</th>
                           <th className="border px-4 py-2 text-left">Cuts</th>
                           <th className="border px-4 py-2 text-left">Created at</th>
-                          <th className="border px-4 py-2 text-left">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -97,51 +95,12 @@ export default function Saved() {
                           </tr>
                         ) : (
                           paginatedLoops.map((loop: Loop) => (
-                            <tr key={loop.id}>
-                              <td className="border px-4 py-2">{loop.name}</td>
-                              <td className="border px-4 py-2">
-                                <Link
-                                  href={loop.share_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="underline"
-                                >
-                                  Open Link
-                                </Link>
-                              </td>
-                              <td className="border px-4 py-2 whitespace-pre-wrap max-w-xs text-sm text-gray-800">
-                                {Array.isArray(loop.cuts) && loop.cuts.length > 0 ? (
-                                  <ul className="space-y-1">
-                                    {loop.cuts.map((cut: any, i: number) => (
-                                      <li key={i}>
-                                        {formatTime(cut.start)} → {formatTime(cut.end)}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <span className="text-gray-500 italic">No cuts</span>
-                                )}
-                              </td>
-                              <td className="border px-4 py-2">
-                                {new Date(loop.created_at).toLocaleString()}
-                              </td>
-                              <td className="border px-4 py-2 space-x-2">
-                                <Button
-                                  onClick={() => handleEdit(loop)}
-                                  variant="outline"
-                                  className="cursor-pointer max-md:gap-r max-md:gap-y"
-                                >
-                                  ✏️ Edit
-                                </Button>
-                                <Button
-                                  onClick={() => handleDelete(loop)}
-                                  variant="outline"
-                                  className="cursor-pointer max-md:gap-y"
-                                >
-                                  🗑️ Delete
-                                </Button>
-                              </td>
-                            </tr>
+                            <LoopRow
+                              key={loop.id}
+                              loop={loop}
+                              onEdit={handleEdit}
+                              onDelete={handleDelete}
+                            />
                           ))
                         )}
                       </tbody>

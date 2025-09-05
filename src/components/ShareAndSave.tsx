@@ -6,6 +6,7 @@ import SaveLoop from './SaveLoop';
 import { useStore } from '@/app/lib/store';
 import toast from 'react-hot-toast';
 import { buildShareUrl } from '@/app/lib/utils';
+import { Share } from 'lucide-react';
 
 interface Props {
   videoId: string;
@@ -34,7 +35,8 @@ export default function ShareAndSave({ videoId, setVideoId, setUrl }: Props) {
   return (
     <div className="flex items-center justify-center mt-10 space-x-4">
       <Button onClick={handleGenerateShareUrl} variant="outline" className="cursor-pointer">
-        🔗 Generate Share URL
+        <Share />
+        Generate Share URL
       </Button>
 
       <SaveLoop videoId={videoId} setVideoId={setVideoId} setUrl={setUrl} />

@@ -105,7 +105,7 @@ export default function YouTubeEmbed() {
 
   return (
     <>
-      <h1 className="text-xl mb-4 font-bold">Paste or type YouTube URL or Video ID or Share URL</h1>
+      <h1 className="text-xl mb-4 font-bold">Enter a YouTube URL or Video ID or Share URL</h1>
 
       <input
         type="text"

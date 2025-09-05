@@ -6,6 +6,7 @@ import { Switch } from './ui/switch';
 import { Label } from './ui/label';
 import toast from 'react-hot-toast';
 import { useStore } from '@/app/lib/store';
+import { Play, Repeat } from 'lucide-react';
 
 interface Props {
   playerRef: RefObject<YT.Player | null>;
@@ -98,7 +99,8 @@ export default function PlayManager({ playerRef, currentCut, intervalRef, setIsP
   return (
     <div className="flex items-center">
       <Button variant="outline" onClick={startCutLoop} className="cursor-pointer">
-        ▶️ Play Loop
+        <Play />
+        Play Loop
       </Button>
 
       <div className="flex items-center gap-2 ml-4">
@@ -109,7 +111,8 @@ export default function PlayManager({ playerRef, currentCut, intervalRef, setIsP
           className="cursor-pointer"
         />
         <Label htmlFor="loop-switch" className="text-sm text-gray-700">
-          🔁 Auto Loop
+          <Repeat size={16} />
+          Auto Loop
         </Label>
       </div>
     </div>

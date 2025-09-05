@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import toast from 'react-hot-toast';
 import { useStore } from '@/app/lib/store';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 import { buildShareUrl } from '@/app/lib/utils';
 import saveLoop from '@/app/actions/saveLoop';
 import { useMutation } from '@tanstack/react-query';
@@ -69,7 +69,8 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
   return (
     <>
       <Button onClick={handleClickOpenSave} variant="outline" className="cursor-pointer">
-        💾 Save
+        <Save />
+        Save
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

@@ -6,11 +6,11 @@ export default function SkeletonLoop() {
       <table className="min-w-full border border-gray-300 text-sm">
         <thead className="bg-gray-100">
           <tr>
+            <th className="border px-4 py-2 w-10"></th>
             <th className="border px-4 py-2 text-left">Name</th>
             <th className="border px-4 py-2 text-left">Share URL</th>
             <th className="border px-4 py-2 text-left">Cuts</th>
             <th className="border px-4 py-2 text-left">Created At</th>
-            <th className="border px-4 py-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>

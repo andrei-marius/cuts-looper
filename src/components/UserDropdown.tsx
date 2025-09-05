@@ -17,7 +17,7 @@ export default function UserDropdown() {
           <MenuIcon className="w-6 h-6 lg:w-5 lg:h-5" />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[200px]">
+      <DropdownMenuContent align="end">
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link className="w-full" href="/saved">
             Saved
