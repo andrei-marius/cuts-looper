@@ -1,4 +1,4 @@
-import { Loop } from '@/app/lib/types';
+import { Loop as LoopType } from '@/app/lib/types';
 import Link from 'next/link';
 import { formatTime } from '@/app/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -12,9 +12,9 @@ import {
 import { SquarePen, Trash2, MoveRight, EllipsisVertical } from 'lucide-react';
 
 interface Props {
-	loop: Loop;
-	onEdit: (l: Loop) => void;
-	onDelete: (l: Loop) => void;
+	loop: LoopType;
+	onEdit: (l: LoopType) => void;
+	onDelete: (l: LoopType) => void;
 }
 
 export default function Loop({ loop, onEdit, onDelete }: Props) {

@@ -29,7 +29,7 @@ export default function DialogDelete() {
 
   return (
     <Dialog open={dialogDeleteOpen} onOpenChange={setDialogDeleteOpen}>
-      <DialogContent className="max-md:top">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Loop</DialogTitle>
         </DialogHeader>
