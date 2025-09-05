@@ -1,9 +1,9 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { Cut } from "./types";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { Cut } from './types';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function timestampToSeconds(timestamp: string): number {
@@ -33,30 +33,32 @@ export const buildShareUrl = (cuts: Cut[], videoId: string | null) => {
   const cutsParam = encodeURIComponent(JSON.stringify(cuts));
   const url = `${window.location.origin}?v=${videoId}&cuts=${cutsParam}`;
 
-  return url
-}
+  return url;
+};
+
+const safeParseUrl = (str: string): URL | null => {
+  try {
+    return new URL(str);
+  } catch {
+    return null;
+  }
+};
 
 export const extractVideoId = (input: string): string | null => {
-    const trimmed = input.trim();
-  
-    // If it's a raw video ID (11 characters, alphanumeric, common in YT)
-    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
-      return trimmed;
-    }
-  
-    try {
-      const url = new URL(trimmed);
-      const hostname = url.hostname;
-      const searchParams = url.searchParams;
-  
-      if (hostname.includes('youtube.com')) {
-        return searchParams.get('v');
-      } else if (hostname === 'youtu.be') {
-        return url.pathname.slice(1);
-      }
-    } catch {
-      // Ignore invalid URL, fallback already handled
-    }
-  
-    return null;
-  };
+  const trimmed = input.trim();
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  const url = safeParseUrl(trimmed);
+  if (!url) return null;
+
+  if (url.hostname.includes('youtube.com')) {
+    return url.searchParams.get('v');
+  } else if (url.hostname === 'youtu.be') {
+    return url.pathname.slice(1);
+  }
+
+  return null;
+};

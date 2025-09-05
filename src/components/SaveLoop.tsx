@@ -9,8 +9,8 @@ import { useStore } from '@/app/lib/store';
 import { Loader2 } from 'lucide-react';
 import { buildShareUrl } from '@/app/lib/utils';
 import saveLoop from '@/app/actions/saveLoop';
-import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 import { useMutation } from '@tanstack/react-query';
+import useAuth from '@/app/hooks/useAuth';
 
 interface Props {
   videoId: string;
@@ -22,25 +22,25 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const { cuts, setShareUrl, clearCuts } = useStore();
-  const { isAuthenticated } = useKindeBrowserClient()
+  const { isAuthenticated } = useAuth();
 
   const mutation = useMutation({
     mutationFn: async () => {
       const url = buildShareUrl(cuts, videoId);
       setShareUrl(url);
-      return saveLoop(name, cuts, url)
+      return saveLoop(name, cuts, url);
     },
     onSuccess: (res) => {
       setDialogOpen(false);
       toast.success(res.msg);
       clearCuts();
-      setName('')
-      setVideoId('')
-      setUrl('')
+      setName('');
+      setVideoId('');
+      setUrl('');
     },
     onError: (err) => {
       toast.error(err.message);
-    }
+    },
   });
 
   const handleClickOpenSave = async () => {
@@ -53,9 +53,9 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
       toast.error('Add at least one Cut first');
       return;
     }
-    
+
     setDialogOpen(true);
-  }
+  };
 
   const handleSave = async () => {
     if (!name) {
@@ -63,21 +63,17 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
       return;
     }
 
-    mutation.mutate()
+    mutation.mutate();
   };
 
   return (
     <>
-      <Button 
-        onClick={handleClickOpenSave} 
-        variant="outline"
-        className='cursor-pointer'
-      >
+      <Button onClick={handleClickOpenSave} variant="outline" className="cursor-pointer">
         💾 Save
       </Button>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className='max-md:top'>
+        <DialogContent className="max-md:top">
           <DialogHeader>
             <DialogTitle>Save Your Loop</DialogTitle>
           </DialogHeader>
@@ -90,29 +86,28 @@ export default function SaveLoop({ videoId, setVideoId, setUrl }: Props) {
           </div>
 
           <div className="flex justify-between">
-          <Button
-            variant="secondary"
-            onClick={() => setDialogOpen(false)}
-            className='cursor-pointer'
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSave} 
-            disabled={mutation.isPending}
-            className='cursor-pointer'
-            variant='outline'
-          >
+            <Button
+              variant="secondary"
+              onClick={() => setDialogOpen(false)}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={mutation.isPending}
+              className="cursor-pointer"
+              variant="outline"
+            >
               {mutation.isPending ? (
-                  <div className="flex items-center gap-2">
-                      <Loader2 className="animate-spin h-4 w-4" />
+                <div className="flex items-center gap-2">
+                  <Loader2 className="animate-spin h-4 w-4" />
                   Saving...
-                  </div>
+                </div>
               ) : (
-                  'Save'
+                'Save'
               )}
-          </Button>
-
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

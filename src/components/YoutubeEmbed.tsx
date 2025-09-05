@@ -9,7 +9,7 @@ import ShareAndSave from './ShareAndSave';
 import { extractVideoId } from '@/app/lib/utils';
 
 export default function YouTubeEmbed() {
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<YT.Player | null>(null);
   const currentCut = useRef<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -88,7 +88,7 @@ export default function YouTubeEmbed() {
       setCuts([]);
       setShareUrl('');
     } else {
-      setUrl(e.target.value); 
+      setUrl(e.target.value);
     }
   };
 
@@ -96,11 +96,7 @@ export default function YouTubeEmbed() {
     if (event.data === (window as any).YT.PlayerState.PAUSED) {
       const currentTime = playerRef.current?.getCurrentTime?.() ?? 0;
       const cut = cuts[currentCut.current];
-      if (
-        isPlaying &&
-        cut &&
-        currentTime > cut.start + 0.3
-      ) {
+      if (isPlaying && cut && currentTime > cut.start + 0.3) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         setIsPlaying(false);
       }
@@ -109,9 +105,7 @@ export default function YouTubeEmbed() {
 
   return (
     <>
-      <h1 className="text-xl mb-4 font-bold">
-        Paste or type YouTube URL or Video ID or Share URL
-      </h1>
+      <h1 className="text-xl mb-4 font-bold">Paste or type YouTube URL or Video ID or Share URL</h1>
 
       <input
         type="text"
@@ -136,11 +130,7 @@ export default function YouTubeEmbed() {
 
           <div className="mb-4">
             <Cuts />
-            <ShareAndSave
-              videoId={videoId}
-              setVideoId={setVideoId}
-              setUrl={setUrl}
-            />
+            <ShareAndSave videoId={videoId} setVideoId={setVideoId} setUrl={setUrl} />
           </div>
         </div>
       )}

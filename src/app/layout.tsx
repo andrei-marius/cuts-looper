@@ -6,15 +6,11 @@ import TopLoader from '@/components/PageTopLoader';
 import Providers from '@/components/Providers';
 
 export const metadata: Metadata = {
-  title: "CutsLooper",
-  description: "",
+  title: 'CutsLooper',
+  description: '',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
@@ -28,4 +24,3 @@ export default function RootLayout({
     </html>
   );
 }
-

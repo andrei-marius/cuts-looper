@@ -1,16 +1,15 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react';
-import { useStore } from '../lib/store';
+import { useEffect, useState } from 'react';
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
 
 export default function useAuth() {
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
-  const { setAuth, isAuthenticated: isAuthenticatedLocal } = useStore();
+  const [isAuthenticatedLocal, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated !== isAuthenticatedLocal) {
-      setAuth(isAuthenticated);
+      setIsAuthenticated(isAuthenticated);
     }
   }, [isAuthenticated, isLoading]);
 

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   Select,
@@ -23,7 +23,7 @@ export default function SearchAndSort() {
           placeholder="Search by Name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className='pl-10'
+          className="pl-10"
           aria-label="Search loops by name"
         />
       </div>
@@ -36,10 +36,14 @@ export default function SearchAndSort() {
           <SelectValue placeholder="Sort order" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem className='cursor-pointer' value="newest">Sort by Newest</SelectItem>
-          <SelectItem className='cursor-pointer' value="oldest">Sort by Oldest</SelectItem>
+          <SelectItem className="cursor-pointer" value="newest">
+            Sort by Newest
+          </SelectItem>
+          <SelectItem className="cursor-pointer" value="oldest">
+            Sort by Oldest
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
-  )
+  );
 }

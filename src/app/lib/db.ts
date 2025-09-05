@@ -5,4 +5,4 @@ const db = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default db
+export default db;

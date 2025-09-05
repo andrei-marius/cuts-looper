@@ -1,11 +1,11 @@
-'use server'
+'use server';
 
 import db from '@/app/lib/db';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { Cut } from '../lib/types';
 
 export default async function saveLoop(name: string, cuts: Cut[], url: string) {
-  if (!name || !cuts || !url) return { msg: 'Internal Error'};
+  if (!name || !cuts || !url) return { msg: 'Internal Error' };
 
   const { getUser } = getKindeServerSession();
   const user = await getUser();

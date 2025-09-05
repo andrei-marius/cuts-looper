@@ -1,11 +1,10 @@
+'use client';
 
-'use client'
-
-import { useState } from "react";
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { timestampToSeconds, secondsToTimestamp } from '@/app/lib/utils';
-import { useStore } from "@/app/lib/store";
-import { Button } from "./ui/button";
+import { useStore } from '@/app/lib/store';
+import { Button } from './ui/button';
 
 export default function Cuts() {
   const [newStart, setNewStart] = useState('');
@@ -28,49 +27,45 @@ export default function Cuts() {
   return (
     <>
       <h2 className="font-semibold mb-2 mt-4">Add a Cut</h2>
-        <div className="flex gap-2 items-center max-sm:flex-col">
-          <input
-            type="text"
-            value={newStart}
-            onChange={(e) => setNewStart(e.target.value)}
-            placeholder="Start (mm:ss/s)"
-            className="flex-1 p-2 border rounded"
-          />
-          <input
-            type="text"
-            value={newEnd}
-            onChange={(e) => setNewEnd(e.target.value)}
-            placeholder="End (mm:ss/s)"
-            className="flex-1 p-2 border rounded"
-          />
-          <Button
-            onClick={addCutFunc}
-            variant='outline'
-            className='cursor-pointer'
-          >
-            ➕ Add
-          </Button>
-        </div>
+      <div className="flex gap-2 items-center max-sm:flex-col">
+        <input
+          type="text"
+          value={newStart}
+          onChange={(e) => setNewStart(e.target.value)}
+          placeholder="Start (mm:ss/s)"
+          className="flex-1 p-2 border rounded"
+        />
+        <input
+          type="text"
+          value={newEnd}
+          onChange={(e) => setNewEnd(e.target.value)}
+          placeholder="End (mm:ss/s)"
+          className="flex-1 p-2 border rounded"
+        />
+        <Button onClick={addCutFunc} variant="outline" className="cursor-pointer">
+          ➕ Add
+        </Button>
+      </div>
 
-        {cuts.length > 0 && (
-          <ul className="list-disc list-inside text-sm text-gray-700 mb-4 mt-2 space-y-2">
-            {cuts.map((c, i) => (
-              <li key={i} className="flex justify-center items-center mb-0">
-                <span>
-                  {secondsToTimestamp(c.start)} → {secondsToTimestamp(c.end)}
-                </span>
-                <Button
-                  onClick={() => removeCut(i)}
-                  variant='ghost'
-                  size='icon'
-                  className='ml-2 cursor-pointer'
-                >
-                  ❌
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
+      {cuts.length > 0 && (
+        <ul className="list-disc list-inside text-sm text-gray-700 mb-4 mt-2 space-y-2">
+          {cuts.map((c, i) => (
+            <li key={i} className="flex justify-center items-center mb-0">
+              <span>
+                {secondsToTimestamp(c.start)} → {secondsToTimestamp(c.end)}
+              </span>
+              <Button
+                onClick={() => removeCut(i)}
+                variant="ghost"
+                size="icon"
+                className="ml-2 cursor-pointer"
+              >
+                ❌
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
-  )
+  );
 }
