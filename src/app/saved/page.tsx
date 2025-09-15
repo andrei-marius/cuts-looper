@@ -8,11 +8,22 @@ import DialogDelete from '@/components/DialogDelete';
 import DialogEdit from '@/components/DialogEdit';
 import { useQuery } from '@tanstack/react-query';
 import SkeletonLoop from '@/components/SkeletonLoop';
-import getLoops from '../actions/getLoops';
 import useAuth from '../hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 import Pagination from '@/components/Pagination';
 import LoopRow from '@/components/Loop';
+
+async function getLoops(): Promise<Loop[]> {
+  const res = await fetch('/api/loops');
+
+  if (!res.ok) {
+    const { error } = await res.json();
+    throw new Error(error || 'Failed to fetch loops');
+  }
+
+  const { data } = (await res.json()) as { data: Loop[] };
+  return data;
+}
 
 export default function Saved() {
   const { searchTerm, sortOrder, setDialogDeleteOpen, setDialogEditOpen, setSelectedLoop } =
@@ -23,15 +34,9 @@ export default function Saved() {
     data: loops,
     error,
     isLoading,
-  } = useQuery({
+  } = useQuery<Loop[], Error>({
     queryKey: ['loops'],
-    queryFn: async () => {
-      const result = await getLoops();
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      return result.data;
-    },
+    queryFn: getLoops,
   });
 
   const filteredSortedLoops = useSearchAndSort({
@@ -64,7 +69,7 @@ export default function Saved() {
           {isLoading || !loops ? (
             <SkeletonLoop />
           ) : loops.length === 0 ? (
-            <p className="text-center text-gray-500">No saved loops.</p>
+            <p className="text-center">No saved loops.</p>
           ) : (
             <>
               <h1 className="text-xl font-semibold mb-4">Saved Loops</h1>
