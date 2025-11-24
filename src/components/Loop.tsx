@@ -28,11 +28,17 @@ export default function Loop({ loop, onEdit, onDelete }: Props) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem onClick={() => onEdit(loop)}>
+            <DropdownMenuItem
+              className='cursor-pointer'
+              onClick={() => onEdit(loop)}
+            >
               <SquarePen className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onDelete(loop)}>
+            <DropdownMenuItem
+              className='cursor-pointer'
+              onClick={() => onDelete(loop)}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
