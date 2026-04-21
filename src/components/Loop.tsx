@@ -49,9 +49,9 @@ export default function Loop({ loop, onEdit, onDelete }: Props) {
       <td className="border px-4 py-2">
         <Link
           href={loop.share_url}
-          target="_blank"
+          // target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="text-[#0095f6] font-semibold hover:underline"
         >
           Open Link
         </Link>

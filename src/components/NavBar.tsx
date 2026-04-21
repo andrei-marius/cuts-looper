@@ -39,7 +39,7 @@ export default function NavBar() {
         ) : isAuthenticated ? (
           <UserDropdown />
         ) : (
-          <LoginLink href="api/auth/login" className="underline">
+          <LoginLink href="api/auth/login" className="text-[#0095f6] font-semibold hover:underline">
             Log In
           </LoginLink>
         )}
