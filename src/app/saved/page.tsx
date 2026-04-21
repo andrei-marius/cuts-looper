@@ -6,24 +6,19 @@ import useSearchAndSort from '@/app/hooks/useSearchAndSort';
 import { useStore } from '@/app/lib/store';
 import DialogDelete from '@/components/DialogDelete';
 import DialogEdit from '@/components/DialogEdit';
-import { useQuery } from '@tanstack/react-query';
 import SkeletonLoop from '@/components/SkeletonLoop';
 import useAuth from '../hooks/useAuth';
 import { Loader2 } from 'lucide-react';
-import Pagination from '@/components/Pagination';
+import { usePaginatedLoops } from '@/app/hooks/usePaginatedLoops';
 import LoopRow from '@/components/Loop';
-
-async function getLoops(): Promise<Loop[]> {
-  const res = await fetch('/api/loops');
-
-  if (!res.ok) {
-    const { error } = await res.json();
-    throw new Error(error || 'Failed to fetch loops');
-  }
-
-  const { data } = (await res.json()) as { data: Loop[] };
-  return data;
-}
+import {
+  Pagination as PaginationUI,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 export default function Saved() {
   const { searchTerm, sortOrder, setDialogDeleteOpen, setDialogEditOpen, setSelectedLoop } =
@@ -31,18 +26,20 @@ export default function Saved() {
   const { isAuthenticated } = useAuth();
 
   const {
-    data: loops,
+    loops,
     error,
     isLoading,
-  } = useQuery<Loop[], Error>({
-    queryKey: ['loops'],
-    queryFn: getLoops,
-  });
+    currentPage,
+    pageCount,
+    handleNextPage,
+    handlePreviousPage,
+    handlePageChange,
+  } = usePaginatedLoops(5);
 
   const filteredSortedLoops = useSearchAndSort({
     searchTerm,
     sortOrder,
-    loops: loops ?? [],
+    loops,
   });
 
   function handleDelete(loop: Loop) {
@@ -66,7 +63,7 @@ export default function Saved() {
     <>
       <div className="p-4">
         <div className="max-w-full">
-          {isLoading || !loops ? (
+          {isLoading ? (
             <SkeletonLoop />
           ) : loops.length === 0 ? (
             <p className="text-center">No saved loops.</p>
@@ -76,43 +73,81 @@ export default function Saved() {
 
               <SearchAndSort />
 
-              <Pagination
-                data={filteredSortedLoops}
-                itemsPerPage={5}
-                render={(paginatedLoops) => (
-                  <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-300 text-sm">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border px-4 py-2 w-10"></th>
-                          <th className="border px-4 py-2 text-left">Name</th>
-                          <th className="border px-4 py-2 text-left">Share URL</th>
-                          <th className="border px-4 py-2 text-left">Cuts</th>
-                          <th className="border px-4 py-2 text-left">Created at</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {paginatedLoops.length === 0 ? (
-                          <tr>
-                            <td colSpan={5} className="p-4 text-center text-gray-500">
-                              No loops match your search.
-                            </td>
-                          </tr>
-                        ) : (
-                          paginatedLoops.map((loop: Loop) => (
-                            <LoopRow
-                              key={loop.id}
-                              loop={loop}
-                              onEdit={handleEdit}
-                              onDelete={handleDelete}
-                            />
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              />
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-300 text-sm">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border px-4 py-2 w-10"></th>
+                      <th className="border px-4 py-2 text-left">Name</th>
+                      <th className="border px-4 py-2 text-left">Share URL</th>
+                      <th className="border px-4 py-2 text-left">Cuts</th>
+                      <th className="border px-4 py-2 text-left">Created at</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSortedLoops.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="p-4 text-center text-gray-500">
+                          No loops match your search.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredSortedLoops.map((loop: Loop) => (
+                        <LoopRow
+                          key={loop.id}
+                          loop={loop}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {pageCount > 1 && (
+                <div className="mt-4 flex justify-center">
+                  <PaginationUI>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={handlePreviousPage}
+                          aria-disabled={currentPage === 1}
+                          className={
+                            currentPage === 1
+                              ? 'pointer-events-none opacity-50 cursor-default'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
+
+                      {Array.from({ length: pageCount }, (_, i) => (
+                        <PaginationItem key={i}>
+                          <PaginationLink
+                            isActive={currentPage === i + 1}
+                            onClick={() => handlePageChange(i + 1)}
+                            className="cursor-pointer"
+                          >
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={handleNextPage}
+                          aria-disabled={currentPage === pageCount}
+                          className={
+                            currentPage === pageCount
+                              ? 'pointer-events-none opacity-50 cursor-default'
+                              : 'cursor-pointer'
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </PaginationUI>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -123,3 +158,4 @@ export default function Saved() {
     </>
   );
 }
+

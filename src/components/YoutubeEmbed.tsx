@@ -1,3 +1,4 @@
+/// <reference types="youtube" />
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
